@@ -16,7 +16,14 @@ import {
   Menu
 } from 'lucide-react';
 
-export type JobRole = 'FULLSTACK_DEV' | 'GROWTH_ENGINEER' | 'QA_ENGINEER' | 'PRODUCT_DESIGNER';
+export type JobRole = 
+  | 'TECH_LEAD_ARCHITECT'
+  | 'DEVOPS_SRE'
+  | 'DATA_ENGINEER'
+  | 'PRODUCT_MANAGER'
+  | 'DEVSECOPS'
+  | 'MOBILE_ENGINEER';
+
 export type Stage = 'APPLIED' | 'SCREENING' | 'TECH_TEST' | 'INTERVIEW' | 'HIRED' | 'REJECTED';
 
 export interface EvaluationScore {
@@ -50,111 +57,133 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Candidates Data
+  // Candidates Data with new diverse roles
   const [candidates, setCandidates] = useState<Candidate[]>([
     {
       id: 'c_1',
       name: 'Christophe Wavoeke',
       email: 'wavoekechristophe@gmail.com',
       phone: '+229 97 00 11 22',
-      role: 'FULLSTACK_DEV',
+      role: 'TECH_LEAD_ARCHITECT',
       experience_years: 5,
       stage: 'INTERVIEW',
-      tags: ['Laravel 11', 'React 18', 'TypeScript', 'Docker', 'PostgreSQL', 'Redis'],
+      tags: ['Architecture Microservices', 'Laravel 11', 'React 18', 'Docker', 'PostgreSQL', 'Redis'],
       github_url: 'https://github.com/christophewavoeke',
       portfolio_url: 'https://christophewavoeke.dev',
       applied_date: '2026-09-19',
-      salary_expectation_xof: 1200000,
+      salary_expectation_xof: 1500000,
       availability: 'Immédiate',
       evaluation: {
         backend: 98,
         frontend: 96,
         qa_architecture: 95,
         culture_fit: 94,
-        lead_dev_notes: 'Candidat d une rigueur exceptionnelle. Architecture propre, clean code, excellente maîtrise de Laravel 11 et de l écosystème React/Vite. Potentiel Lead immédiat.'
+        lead_dev_notes: 'Candidat d une rigueur architecturale rare. Maîtrise avancée des microservices, Clean Code et direction technique.'
       }
     },
     {
       id: 'c_2',
-      name: 'Armel Hounkpatin',
-      email: 'a.hounkpatin@gmail.com',
+      name: 'Kafui Amoussou',
+      email: 'k.amoussou@cloud-infra.bj',
       phone: '+229 95 33 44 55',
-      role: 'FULLSTACK_DEV',
-      experience_years: 3,
+      role: 'DEVOPS_SRE',
+      experience_years: 4,
       stage: 'TECH_TEST',
-      tags: ['Laravel', 'Vue.js', 'MySQL', 'APIs REST'],
-      github_url: 'https://github.com/armel-h',
+      tags: ['Kubernetes', 'Terraform', 'AWS Cloud', 'GitLab CI/CD', 'Prometheus'],
+      github_url: 'https://github.com/kafui-devops',
       applied_date: '2026-09-20',
-      salary_expectation_xof: 850000,
+      salary_expectation_xof: 1250000,
       availability: '1 mois de préavis',
       evaluation: {
-        backend: 82,
-        frontend: 78,
-        qa_architecture: 75,
-        culture_fit: 85,
-        lead_dev_notes: 'Bonne compréhension des requêtes SQL et Eloquent. Test technique de code en cours de revue.'
+        backend: 85,
+        frontend: 70,
+        qa_architecture: 94,
+        culture_fit: 88,
+        lead_dev_notes: 'Excellente maîtrise des clusters Kubernetes, Infrastructure-as-Code et observabilité SRE.'
       }
     },
     {
       id: 'c_3',
       name: 'Syntyche Agossa',
-      email: 's.agossa@growth-afri.bj',
+      email: 's.agossa@data-tech.bj',
       phone: '+229 96 11 22 33',
-      role: 'GROWTH_ENGINEER',
+      role: 'DATA_ENGINEER',
       experience_years: 4,
       stage: 'INTERVIEW',
-      tags: ['GA4/GTM', 'n8n', 'SQL', 'APIs', 'Python', 'Hubspot'],
+      tags: ['PostgreSQL', 'Airflow Pipelines', 'dbt', 'Python ETL', 'Data Modeling'],
+      github_url: 'https://github.com/syntyche-data',
       applied_date: '2026-09-21',
-      salary_expectation_xof: 950000,
+      salary_expectation_xof: 1100000,
       availability: 'Immédiate',
       evaluation: {
-        backend: 75,
-        frontend: 70,
-        qa_architecture: 80,
+        backend: 88,
+        frontend: 65,
+        qa_architecture: 90,
         culture_fit: 92,
-        lead_dev_notes: 'Profil très analytique, excellente maîtrise du tracking n8n et de l automatisation d acquisition B2B.'
+        lead_dev_notes: 'Forte expertise dans la structuration des data warehouses et l orchestration de pipelines volumineux.'
       }
     },
     {
       id: 'c_4',
-      name: 'Rodrigue Dossou',
-      email: 'r.dossou@qa-automation.bj',
+      name: 'Armel Hounkpatin',
+      email: 'a.hounkpatin@product-lab.bj',
       phone: '+229 94 88 77 66',
-      role: 'QA_ENGINEER',
-      experience_years: 4,
+      role: 'PRODUCT_MANAGER',
+      experience_years: 5,
       stage: 'TECH_TEST',
-      tags: ['Playwright', 'Cypress', 'Postman', 'CI/CD GitHub Actions', 'Appium'],
-      github_url: 'https://github.com/rodrigue-qa',
+      tags: ['Product Discovery', 'Roadmapping SaaS', 'Scrum & Agile', 'User Research', 'Metrics KPI'],
       applied_date: '2026-09-22',
-      salary_expectation_xof: 900000,
+      salary_expectation_xof: 1300000,
       availability: '2 semaines',
       evaluation: {
         backend: 70,
-        frontend: 75,
-        qa_architecture: 94,
-        culture_fit: 88,
-        lead_dev_notes: 'Excellente suite de tests E2E Playwright et scénarios d intégration continue sur pipelines Docker.'
+        frontend: 80,
+        qa_architecture: 85,
+        culture_fit: 95,
+        lead_dev_notes: 'Excellente vision produit B2B, grande clarté dans la formulation des user stories et l analyse d impact.'
       }
     },
     {
       id: 'c_5',
-      name: 'Inès Gbaguidi',
-      email: 'ines.design@studio.bj',
-      phone: '+229 40 55 66 77',
-      role: 'PRODUCT_DESIGNER',
-      experience_years: 3,
+      name: 'Rodrigue Dossou',
+      email: 'r.dossou@security-guard.bj',
+      phone: '+229 97 44 22 88',
+      role: 'DEVSECOPS',
+      experience_years: 4,
       stage: 'SCREENING',
-      tags: ['Figma', 'Design System', 'User Flows', 'Wireframing', 'Prototypage'],
-      portfolio_url: 'https://behance.net/ines-ux',
+      tags: ['OWASP Top 10', 'Audit Pentest', 'PCI-DSS', 'HashiCorp Vault', 'SonarQube'],
+      github_url: 'https://github.com/rodrigue-security',
       applied_date: '2026-09-23',
-      salary_expectation_xof: 800000,
+      salary_expectation_xof: 1200000,
       availability: 'Immédiate',
       evaluation: {
-        backend: 40,
-        frontend: 85,
-        qa_architecture: 80,
+        backend: 82,
+        frontend: 60,
+        qa_architecture: 95,
+        culture_fit: 88,
+        lead_dev_notes: 'Spécialiste de la sécurité applicative et du durcissement des environnements de conteneurs.'
+      }
+    },
+    {
+      id: 'c_6',
+      name: 'Inès Gbaguidi',
+      email: 'ines.mobile@app-creators.bj',
+      phone: '+229 40 55 66 77',
+      role: 'MOBILE_ENGINEER',
+      experience_years: 3,
+      stage: 'SCREENING',
+      tags: ['Flutter', 'Dart', 'iOS & Android', 'State Management', 'Offline-First'],
+      github_url: 'https://github.com/ines-mobile',
+      portfolio_url: 'https://apps.ines.dev',
+      applied_date: '2026-09-24',
+      salary_expectation_xof: 950000,
+      availability: 'Immédiate',
+      evaluation: {
+        backend: 72,
+        frontend: 92,
+        qa_architecture: 84,
         culture_fit: 90,
-        lead_dev_notes: 'Superbe portfolio Figma, très bonne maîtrise des composants réutilisables et des tokens de design.'
+        lead_dev_notes: 'Excellente maîtrise de Flutter cross-platform avec applications publiées sur les stores.'
       }
     }
   ]);
@@ -172,9 +201,9 @@ export default function App() {
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPhone, setNewPhone] = useState('+229 ');
-  const [newRole, setNewRole] = useState<JobRole>('FULLSTACK_DEV');
-  const [newExp, setNewExp] = useState(3);
-  const [newTags, setNewTags] = useState('Laravel, React, TypeScript');
+  const [newRole, setNewRole] = useState<JobRole>('TECH_LEAD_ARCHITECT');
+  const [newExp, setNewExp] = useState(4);
+  const [newTags, setNewTags] = useState('Architecture, Microservices, Cloud, Docker');
   const [newSalary, setNewSalary] = useState(900000);
   const [newGithub, setNewGithub] = useState('');
 
@@ -256,10 +285,12 @@ export default function App() {
 
   // Sober Corporate Role Titles
   const roleTitles: Record<JobRole, string> = {
-    FULLSTACK_DEV: 'Développeur Full Stack',
-    GROWTH_ENGINEER: 'Growth Engineer',
-    QA_ENGINEER: 'QA Engineer / Automation',
-    PRODUCT_DESIGNER: 'Product Designer UI/UX',
+    TECH_LEAD_ARCHITECT: 'Tech Lead & Architecte',
+    DEVOPS_SRE: 'DevOps & Cloud SRE',
+    DATA_ENGINEER: 'Data Engineer',
+    PRODUCT_MANAGER: 'Lead Product Manager',
+    DEVSECOPS: 'Ingénieur DevSecOps',
+    MOBILE_ENGINEER: 'Lead Mobile Flutter',
   };
 
   const stageLabels: Record<Stage, string> = {
@@ -423,7 +454,7 @@ export default function App() {
               >
                 Tous ({candidates.length})
               </button>
-              {(['FULLSTACK_DEV', 'GROWTH_ENGINEER', 'QA_ENGINEER', 'PRODUCT_DESIGNER'] as JobRole[]).map(r => {
+              {(['TECH_LEAD_ARCHITECT', 'DEVOPS_SRE', 'DATA_ENGINEER', 'PRODUCT_MANAGER', 'DEVSECOPS', 'MOBILE_ENGINEER'] as JobRole[]).map(r => {
                 const count = candidates.filter(c => c.role === r).length;
                 return (
                   <button
@@ -966,10 +997,12 @@ export default function App() {
                   onChange={(e) => setNewRole(e.target.value as JobRole)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
                 >
-                  <option value="FULLSTACK_DEV">Développeur Full Stack</option>
-                  <option value="GROWTH_ENGINEER">Growth Engineer</option>
-                  <option value="QA_ENGINEER">QA Engineer / Automation</option>
-                  <option value="PRODUCT_DESIGNER">Product Designer UI/UX</option>
+                  <option value="TECH_LEAD_ARCHITECT">Tech Lead & Architecte Logiciel</option>
+                  <option value="DEVOPS_SRE">Ingénieur DevOps & Cloud SRE</option>
+                  <option value="DATA_ENGINEER">Data Engineer & Analytics</option>
+                  <option value="PRODUCT_MANAGER">Lead Product Manager SaaS</option>
+                  <option value="DEVSECOPS">Ingénieur DevSecOps & Sécurité</option>
+                  <option value="MOBILE_ENGINEER">Lead Développeur Mobile Flutter</option>
                 </select>
               </div>
 
