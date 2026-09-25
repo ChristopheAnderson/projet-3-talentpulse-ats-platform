@@ -13,8 +13,25 @@ import {
   TrendingUp, 
   ChevronRight,
   Code2,
-  Menu
+  Menu,
+  Calendar,
+  Video,
+  GripVertical,
+  Check,
+  Scale,
+  Sparkles,
+  FileCheck,
+  FileSpreadsheet,
+  Database,
+  User,
+  Mail,
+  Phone,
+  DollarSign
 } from 'lucide-react';
+import AiResumeDropzone from './components/AiResumeDropzone';
+import AiInterviewCopilotModal from './components/AiInterviewCopilotModal';
+import OfferLetterModal from './components/OfferLetterModal';
+import DataBackupHubModal from './components/DataBackupHubModal';
 
 export type JobRole = 
   | 'TECH_LEAD_ARCHITECT'
@@ -34,6 +51,18 @@ export interface EvaluationScore {
   lead_dev_notes: string;
 }
 
+export interface InterviewSchedule {
+  id: string;
+  candidate_id: string;
+  candidate_name: string;
+  role: JobRole;
+  date_time: string;
+  type: 'SCREENING' | 'LIVE_CODING' | 'SYSTEM_DESIGN' | 'CULTURE_FIT';
+  meet_url: string;
+  interviewer: string;
+  status: 'SCHEDULED' | 'COMPLETED';
+}
+
 export interface Candidate {
   id: string;
   name: string;
@@ -51,152 +80,204 @@ export interface Candidate {
   evaluation: EvaluationScore;
 }
 
+const INITIAL_CANDIDATES: Candidate[] = [
+  {
+    id: 'c_1',
+    name: 'Christophe Wavoeke',
+    email: 'wavoekechristophe@gmail.com',
+    phone: '+229 97 00 11 22',
+    role: 'TECH_LEAD_ARCHITECT',
+    experience_years: 5,
+    stage: 'INTERVIEW',
+    tags: ['Architecture Microservices', 'Laravel 11', 'React 18', 'Docker', 'PostgreSQL', 'Redis'],
+    github_url: 'https://github.com/christophewavoeke',
+    portfolio_url: 'https://christophewavoeke.dev',
+    applied_date: '2026-09-19',
+    salary_expectation_xof: 1500000,
+    availability: 'Immédiate',
+    evaluation: {
+      backend: 98,
+      frontend: 96,
+      qa_architecture: 95,
+      culture_fit: 94,
+      lead_dev_notes: 'Candidat d une rigueur architecturale rare. Maîtrise avancée des microservices, Clean Code et direction technique.'
+    }
+  },
+  {
+    id: 'c_2',
+    name: 'Kafui Amoussou',
+    email: 'k.amoussou@cloud-infra.bj',
+    phone: '+229 95 33 44 55',
+    role: 'DEVOPS_SRE',
+    experience_years: 4,
+    stage: 'TECH_TEST',
+    tags: ['Kubernetes', 'Terraform', 'AWS Cloud', 'GitLab CI/CD', 'Prometheus'],
+    github_url: 'https://github.com/kafui-devops',
+    applied_date: '2026-09-20',
+    salary_expectation_xof: 1250000,
+    availability: '1 mois de préavis',
+    evaluation: {
+      backend: 85,
+      frontend: 70,
+      qa_architecture: 94,
+      culture_fit: 88,
+      lead_dev_notes: 'Excellente maîtrise des clusters Kubernetes, Infrastructure-as-Code et observabilité SRE.'
+    }
+  },
+  {
+    id: 'c_3',
+    name: 'Syntyche Agossa',
+    email: 's.agossa@data-tech.bj',
+    phone: '+229 96 11 22 33',
+    role: 'DATA_ENGINEER',
+    experience_years: 4,
+    stage: 'INTERVIEW',
+    tags: ['PostgreSQL', 'Airflow Pipelines', 'dbt', 'Python ETL', 'Data Modeling'],
+    github_url: 'https://github.com/syntyche-data',
+    applied_date: '2026-09-21',
+    salary_expectation_xof: 1100000,
+    availability: 'Immédiate',
+    evaluation: {
+      backend: 88,
+      frontend: 65,
+      qa_architecture: 90,
+      culture_fit: 92,
+      lead_dev_notes: 'Forte expertise dans la structuration des data warehouses et l orchestration de pipelines volumineux.'
+    }
+  },
+  {
+    id: 'c_4',
+    name: 'Armel Hounkpatin',
+    email: 'a.hounkpatin@product-lab.bj',
+    phone: '+229 94 88 77 66',
+    role: 'PRODUCT_MANAGER',
+    experience_years: 5,
+    stage: 'TECH_TEST',
+    tags: ['Product Discovery', 'Roadmapping SaaS', 'Scrum & Agile', 'User Research', 'Metrics KPI'],
+    applied_date: '2026-09-22',
+    salary_expectation_xof: 1300000,
+    availability: '2 semaines',
+    evaluation: {
+      backend: 70,
+      frontend: 80,
+      qa_architecture: 85,
+      culture_fit: 95,
+      lead_dev_notes: 'Excellente vision produit B2B, grande clarté dans la formulation des user stories et l analyse d impact.'
+    }
+  },
+  {
+    id: 'c_5',
+    name: 'Rodrigue Dossou',
+    email: 'r.dossou@security-guard.bj',
+    phone: '+229 97 44 22 88',
+    role: 'DEVSECOPS',
+    experience_years: 4,
+    stage: 'SCREENING',
+    tags: ['OWASP Top 10', 'Audit Pentest', 'PCI-DSS', 'HashiCorp Vault', 'SonarQube'],
+    github_url: 'https://github.com/rodrigue-security',
+    applied_date: '2026-09-23',
+    salary_expectation_xof: 1200000,
+    availability: 'Immédiate',
+    evaluation: {
+      backend: 82,
+      frontend: 60,
+      qa_architecture: 95,
+      culture_fit: 88,
+      lead_dev_notes: 'Spécialiste de la sécurité applicative et du durcissement des environnements de conteneurs.'
+    }
+  },
+  {
+    id: 'c_6',
+    name: 'Inès Gbaguidi',
+    email: 'ines.mobile@app-creators.bj',
+    phone: '+229 40 55 66 77',
+    role: 'MOBILE_ENGINEER',
+    experience_years: 3,
+    stage: 'SCREENING',
+    tags: ['Flutter', 'Dart', 'iOS & Android', 'State Management', 'Offline-First'],
+    github_url: 'https://github.com/ines-mobile',
+    portfolio_url: 'https://apps.ines.dev',
+    applied_date: '2026-09-24',
+    salary_expectation_xof: 950000,
+    availability: 'Immédiate',
+    evaluation: {
+      backend: 72,
+      frontend: 92,
+      qa_architecture: 84,
+      culture_fit: 90,
+      lead_dev_notes: 'Excellente maîtrise de Flutter cross-platform avec applications publiées sur les stores.'
+    }
+  }
+];
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'kanban' | 'scorecard' | 'directory' | 'analytics'>('kanban');
+  const [activeTab, setActiveTab] = useState<'kanban' | 'scorecard' | 'interviews' | 'directory' | 'analytics'>('kanban');
   const [roleFilter, setRoleFilter] = useState<'ALL' | JobRole>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showDataHub, setShowDataHub] = useState(false);
 
-  // Candidates Data with new diverse roles
-  const [candidates, setCandidates] = useState<Candidate[]>([
+  // Drag and Drop state
+  const [draggedCandidateId, setDraggedCandidateId] = useState<string | null>(null);
+  const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [selectedCandidateForCopilot, setSelectedCandidateForCopilot] = useState<Candidate | null>(null);
+  const [candidateForOffer, setCandidateForOffer] = useState<Candidate | null>(null);
+
+  // Compare candidates state
+  const [selectedForCompare, setSelectedForCompare] = useState<string[]>(['c_1', 'c_2']);
+  const [showCompareModal, setShowCompareModal] = useState<boolean>(false);
+
+  // Candidates Data (Dynamic vivier, Excel & JSON bidirectional sync)
+  const [candidates, setCandidates] = useState<Candidate[]>(INITIAL_CANDIDATES);
+
+  // Interviews State
+  const [interviews, setInterviews] = useState<InterviewSchedule[]>([
     {
-      id: 'c_1',
-      name: 'Christophe Wavoeke',
-      email: 'wavoekechristophe@gmail.com',
-      phone: '+229 97 00 11 22',
+      id: 'int_1',
+      candidate_id: 'c_1',
+      candidate_name: 'Christophe Wavoeke',
       role: 'TECH_LEAD_ARCHITECT',
-      experience_years: 5,
-      stage: 'INTERVIEW',
-      tags: ['Architecture Microservices', 'Laravel 11', 'React 18', 'Docker', 'PostgreSQL', 'Redis'],
-      github_url: 'https://github.com/christophewavoeke',
-      portfolio_url: 'https://christophewavoeke.dev',
-      applied_date: '2026-09-19',
-      salary_expectation_xof: 1500000,
-      availability: 'Immédiate',
-      evaluation: {
-        backend: 98,
-        frontend: 96,
-        qa_architecture: 95,
-        culture_fit: 94,
-        lead_dev_notes: 'Candidat d une rigueur architecturale rare. Maîtrise avancée des microservices, Clean Code et direction technique.'
-      }
+      date_time: '2026-09-26 à 10:00 (GMT+1)',
+      type: 'SYSTEM_DESIGN',
+      meet_url: 'https://meet.google.com/qil-tech-arch',
+      interviewer: 'Direction Technique & CTO',
+      status: 'SCHEDULED'
     },
     {
-      id: 'c_2',
-      name: 'Kafui Amoussou',
-      email: 'k.amoussou@cloud-infra.bj',
-      phone: '+229 95 33 44 55',
-      role: 'DEVOPS_SRE',
-      experience_years: 4,
-      stage: 'TECH_TEST',
-      tags: ['Kubernetes', 'Terraform', 'AWS Cloud', 'GitLab CI/CD', 'Prometheus'],
-      github_url: 'https://github.com/kafui-devops',
-      applied_date: '2026-09-20',
-      salary_expectation_xof: 1250000,
-      availability: '1 mois de préavis',
-      evaluation: {
-        backend: 85,
-        frontend: 70,
-        qa_architecture: 94,
-        culture_fit: 88,
-        lead_dev_notes: 'Excellente maîtrise des clusters Kubernetes, Infrastructure-as-Code et observabilité SRE.'
-      }
-    },
-    {
-      id: 'c_3',
-      name: 'Syntyche Agossa',
-      email: 's.agossa@data-tech.bj',
-      phone: '+229 96 11 22 33',
+      id: 'int_2',
+      candidate_id: 'c_3',
+      candidate_name: 'Syntyche Agossa',
       role: 'DATA_ENGINEER',
-      experience_years: 4,
-      stage: 'INTERVIEW',
-      tags: ['PostgreSQL', 'Airflow Pipelines', 'dbt', 'Python ETL', 'Data Modeling'],
-      github_url: 'https://github.com/syntyche-data',
-      applied_date: '2026-09-21',
-      salary_expectation_xof: 1100000,
-      availability: 'Immédiate',
-      evaluation: {
-        backend: 88,
-        frontend: 65,
-        qa_architecture: 90,
-        culture_fit: 92,
-        lead_dev_notes: 'Forte expertise dans la structuration des data warehouses et l orchestration de pipelines volumineux.'
-      }
-    },
-    {
-      id: 'c_4',
-      name: 'Armel Hounkpatin',
-      email: 'a.hounkpatin@product-lab.bj',
-      phone: '+229 94 88 77 66',
-      role: 'PRODUCT_MANAGER',
-      experience_years: 5,
-      stage: 'TECH_TEST',
-      tags: ['Product Discovery', 'Roadmapping SaaS', 'Scrum & Agile', 'User Research', 'Metrics KPI'],
-      applied_date: '2026-09-22',
-      salary_expectation_xof: 1300000,
-      availability: '2 semaines',
-      evaluation: {
-        backend: 70,
-        frontend: 80,
-        qa_architecture: 85,
-        culture_fit: 95,
-        lead_dev_notes: 'Excellente vision produit B2B, grande clarté dans la formulation des user stories et l analyse d impact.'
-      }
-    },
-    {
-      id: 'c_5',
-      name: 'Rodrigue Dossou',
-      email: 'r.dossou@security-guard.bj',
-      phone: '+229 97 44 22 88',
-      role: 'DEVSECOPS',
-      experience_years: 4,
-      stage: 'SCREENING',
-      tags: ['OWASP Top 10', 'Audit Pentest', 'PCI-DSS', 'HashiCorp Vault', 'SonarQube'],
-      github_url: 'https://github.com/rodrigue-security',
-      applied_date: '2026-09-23',
-      salary_expectation_xof: 1200000,
-      availability: 'Immédiate',
-      evaluation: {
-        backend: 82,
-        frontend: 60,
-        qa_architecture: 95,
-        culture_fit: 88,
-        lead_dev_notes: 'Spécialiste de la sécurité applicative et du durcissement des environnements de conteneurs.'
-      }
-    },
-    {
-      id: 'c_6',
-      name: 'Inès Gbaguidi',
-      email: 'ines.mobile@app-creators.bj',
-      phone: '+229 40 55 66 77',
-      role: 'MOBILE_ENGINEER',
-      experience_years: 3,
-      stage: 'SCREENING',
-      tags: ['Flutter', 'Dart', 'iOS & Android', 'State Management', 'Offline-First'],
-      github_url: 'https://github.com/ines-mobile',
-      portfolio_url: 'https://apps.ines.dev',
-      applied_date: '2026-09-24',
-      salary_expectation_xof: 950000,
-      availability: 'Immédiate',
-      evaluation: {
-        backend: 72,
-        frontend: 92,
-        qa_architecture: 84,
-        culture_fit: 90,
-        lead_dev_notes: 'Excellente maîtrise de Flutter cross-platform avec applications publiées sur les stores.'
-      }
+      date_time: '2026-09-26 à 15:30 (GMT+1)',
+      type: 'LIVE_CODING',
+      meet_url: 'https://meet.google.com/qil-data-live',
+      interviewer: 'Senior Data Architect',
+      status: 'SCHEDULED'
     }
   ]);
 
+  // Selected Candidate for Scorecard or Detail Modal
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+
+  // Scorecard Evaluation Form State
   const [evalCandidateId, setEvalCandidateId] = useState<string>('c_1');
-  const [evalBack, setEvalBack] = useState<number>(95);
-  const [evalFront, setEvalFront] = useState<number>(92);
-  const [evalQa, setEvalQa] = useState<number>(90);
+  const [evalBack, setEvalBack] = useState<number>(98);
+  const [evalFront, setEvalFront] = useState<number>(96);
+  const [evalQa, setEvalQa] = useState<number>(95);
   const [evalCulture, setEvalCulture] = useState<number>(94);
-  const [evalNotes, setEvalNotes] = useState<string>('Maîtrise technique confirmée lors de l entretien de code.');
+  const [evalNotes, setEvalNotes] = useState<string>('Candidat d une rigueur architecturale rare.');
   const [evalSavedBanner, setEvalSavedBanner] = useState<boolean>(false);
 
+  // Schedule Modal
+  const [showScheduleModal, setShowScheduleModal] = useState<boolean>(false);
+  const [schedCandidateId, setSchedCandidateId] = useState<string>('c_1');
+  const [schedType, setSchedType] = useState<'SCREENING' | 'LIVE_CODING' | 'SYSTEM_DESIGN' | 'CULTURE_FIT'>('SYSTEM_DESIGN');
+  const [schedDate, setSchedDate] = useState<string>('2026-09-27');
+  const [schedTime, setSchedTime] = useState<string>('11:00');
+  const [schedInterviewer, setSchedInterviewer] = useState<string>('Lead Évaluateur Technique');
+
+  // New Candidate Modal
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -204,7 +285,7 @@ export default function App() {
   const [newRole, setNewRole] = useState<JobRole>('TECH_LEAD_ARCHITECT');
   const [newExp, setNewExp] = useState(4);
   const [newTags, setNewTags] = useState('Architecture, Microservices, Cloud, Docker');
-  const [newSalary, setNewSalary] = useState(900000);
+  const [newSalary, setNewSalary] = useState(1200000);
   const [newGithub, setNewGithub] = useState('');
 
   const calculateScore = (e: EvaluationScore) => {
@@ -253,6 +334,27 @@ export default function App() {
     setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage: newStage } : c));
   };
 
+  // Schedule Interview Handler
+  const handleScheduleInterview = () => {
+    const cand = candidates.find(c => c.id === schedCandidateId);
+    if (!cand) return;
+
+    const newInterview: InterviewSchedule = {
+      id: `int_${Date.now()}`,
+      candidate_id: cand.id,
+      candidate_name: cand.name,
+      role: cand.role,
+      date_time: `${schedDate} à ${schedTime} (GMT+1)`,
+      type: schedType,
+      meet_url: `https://meet.google.com/qil-${Math.random().toString(36).substring(2, 7)}`,
+      interviewer: schedInterviewer,
+      status: 'SCHEDULED'
+    };
+
+    setInterviews(prev => [newInterview, ...prev]);
+    setShowScheduleModal(false);
+  };
+
   const handleAddCandidate = () => {
     if (!newName.trim()) return;
     const newCand: Candidate = {
@@ -269,11 +371,11 @@ export default function App() {
       salary_expectation_xof: Number(newSalary),
       availability: 'Immédiate',
       evaluation: {
-        backend: 70,
-        frontend: 70,
-        qa_architecture: 70,
-        culture_fit: 75,
-        lead_dev_notes: 'Candidature reçue via talents@qileo.com'
+        backend: 75,
+        frontend: 75,
+        qa_architecture: 75,
+        culture_fit: 80,
+        lead_dev_notes: 'Dossier enregistré via le vivier TalentPulse'
       }
     };
 
@@ -283,7 +385,58 @@ export default function App() {
     setNewEmail('');
   };
 
-  // Sober Corporate Role Titles
+  // Drag and Drop Handlers
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    e.dataTransfer.setData('text/plain', id);
+    setDraggedCandidateId(id);
+  };
+
+  const handleDragOver = (e: React.DragEvent, stage: Stage) => {
+    e.preventDefault();
+    if (dragOverStage !== stage) {
+      setDragOverStage(stage);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverStage(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetStage: Stage) => {
+    e.preventDefault();
+    const candId = e.dataTransfer.getData('text/plain') || draggedCandidateId;
+    if (candId) {
+      handleUpdateStage(candId, targetStage);
+      const cand = candidates.find(c => c.id === candId);
+      if (cand) {
+        setToastMessage(`Candidat ${cand.name} déplacé avec succès vers ${stageLabels[targetStage]} !`);
+        setTimeout(() => setToastMessage(null), 3500);
+      }
+    }
+    setDraggedCandidateId(null);
+    setDragOverStage(null);
+  };
+
+  const handleAiCandidateExtracted = (newCand: Candidate) => {
+    setCandidates(prev => [newCand, ...prev]);
+    setToastMessage(`Candidat extrait par IA : ${newCand.name} ajouté à la colonne Nouveau Candidat !`);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  // Comparison toggle
+  const toggleSelectForCompare = (id: string) => {
+    setSelectedForCompare(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        if (prev.length >= 3) {
+          return [prev[1], prev[2], id];
+        }
+        return [...prev, id];
+      }
+    });
+  };
+
   const roleTitles: Record<JobRole, string> = {
     TECH_LEAD_ARCHITECT: 'Tech Lead & Architecte',
     DEVOPS_SRE: 'DevOps & Cloud SRE',
@@ -300,6 +453,13 @@ export default function App() {
     INTERVIEW: 'Entretien Tech & Culture',
     HIRED: 'Offre Validée (CDI)',
     REJECTED: 'Non Retenu',
+  };
+
+  const interviewTypeLabels = {
+    SCREENING: 'Screening RH Initial',
+    LIVE_CODING: 'Test Live Coding',
+    SYSTEM_DESIGN: 'Architecture & System Design',
+    CULTURE_FIT: 'Entretien Culture & Leadership'
   };
 
   const filteredCandidates = useMemo(() => {
@@ -331,12 +491,40 @@ export default function App() {
                     Recrutement Tech & Produit
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-500 font-medium">Pipeline & Évaluation Technique Pondérée</p>
+                <p className="text-xs sm:text-sm text-slate-500 font-medium">Pipeline, Entretiens & Évaluation Technique</p>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {selectedForCompare.length >= 2 && (
+                <button
+                  onClick={() => setShowCompareModal(true)}
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-indigo-800 text-xs sm:text-sm font-semibold rounded-lg border border-indigo-200 flex items-center gap-1.5 transition"
+                >
+                  <Scale className="w-4 h-4 text-indigo-700" />
+                  <span>Comparer ({selectedForCompare.length})</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => setShowScheduleModal(true)}
+                className="hidden md:flex px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-lg border border-slate-200 items-center gap-2 transition"
+              >
+                <Calendar className="w-4 h-4 text-indigo-700" />
+                <span>Planifier Entretien</span>
+              </button>
+
+              {/* Data Management Hub (Excel / JSON / Reset) */}
+              <button
+                onClick={() => setShowDataHub(true)}
+                className="hidden sm:flex px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs sm:text-sm font-bold rounded-lg items-center gap-2 transition shadow-xs"
+                title="Gérer le vivier : Excel (.xlsx), JSON ou Réinitialisation"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                <span>Base Données (Excel/JSON)</span>
+              </button>
+
               <button
                 onClick={() => setShowAddModal(true)}
                 className="hidden sm:flex px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-semibold rounded-lg shadow-sm items-center gap-2 transition"
@@ -365,7 +553,7 @@ export default function App() {
               }`}
             >
               <Briefcase className="w-4 h-4" />
-              <span>Pipeline de Recrutement</span>
+              <span>Pipeline (Glisser-Déposer)</span>
               <span className="px-2 py-0.5 rounded-full text-xs bg-slate-200 text-slate-800 font-bold">
                 {candidates.length}
               </span>
@@ -379,7 +567,21 @@ export default function App() {
               }`}
             >
               <Sliders className="w-4 h-4" />
-              <span>Scorecard Technique Pondérée</span>
+              <span>Scorecard Technique</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('interviews')}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 text-sm font-semibold transition whitespace-nowrap ${
+                activeTab === 'interviews'
+                  ? 'border-indigo-700 text-indigo-800 bg-indigo-50/50'
+                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Entretiens & Planning</span>
+              <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-100 text-indigo-800 font-bold">
+                {interviews.length}
+              </span>
             </button>
             <button
               onClick={() => setActiveTab('directory')}
@@ -411,6 +613,7 @@ export default function App() {
               {[
                 { id: 'kanban', label: `Pipeline (${candidates.length})`, icon: Briefcase },
                 { id: 'scorecard', label: 'Scorecard Technique', icon: Sliders },
+                { id: 'interviews', label: `Entretiens (${interviews.length})`, icon: Calendar },
                 { id: 'directory', label: 'Vivier des Candidats', icon: Users },
                 { id: 'analytics', label: 'Métriques & Funnel', icon: TrendingUp }
               ].map(item => {
@@ -486,117 +689,156 @@ export default function App() {
         )}
 
         {/* ============================================================== */}
-        {/* TAB 1: KANBAN PIPELINE */}
+        {/* TAB 1: KANBAN PIPELINE AVEC GLISSER-DÉPOSER NATIF */}
         {/* ============================================================== */}
         {activeTab === 'kanban' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
-            {(['APPLIED', 'SCREENING', 'TECH_TEST', 'INTERVIEW', 'HIRED'] as Stage[]).map(stageKey => {
-              const stageCandidates = filteredCandidates.filter(c => c.stage === stageKey);
+          <div className="space-y-5">
+            {/* AI Resume Dropzone */}
+            <AiResumeDropzone onCandidateExtracted={handleAiCandidateExtracted} />
 
-              return (
-                <div key={stageKey} className="rounded-xl bg-white border border-slate-200 flex flex-col min-h-[500px] shadow-sm">
-                  {/* Column Header */}
-                  <div className="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                    <span className="font-bold text-slate-900 text-xs sm:text-sm">{stageLabels[stageKey]}</span>
-                    <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center">
-                      {stageCandidates.length}
-                    </span>
-                  </div>
+            <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+              <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                <GripVertical className="w-4 h-4 text-indigo-600" />
+                Glissez-déposez les cartes d'une colonne à l'autre pour faire avancer le candidat dans le pipeline
+              </span>
+              <span className="hidden sm:inline font-medium">Sélectionnez plusieurs candidats pour les comparer</span>
+            </div>
 
-                  {/* Cards List */}
-                  <div className="p-3 flex-1 overflow-y-auto space-y-3">
-                    {stageCandidates.length === 0 ? (
-                      <div className="py-12 text-center text-xs text-slate-400 font-medium border border-dashed border-slate-200 rounded-lg">
-                        Aucun candidat
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+              {(['APPLIED', 'SCREENING', 'TECH_TEST', 'INTERVIEW', 'HIRED'] as Stage[]).map(stageKey => {
+                const stageCandidates = filteredCandidates.filter(c => c.stage === stageKey);
+                const isOver = dragOverStage === stageKey;
+
+                return (
+                  <div 
+                    key={stageKey}
+                    onDragOver={(e) => handleDragOver(e, stageKey)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, stageKey)}
+                    className={`rounded-xl bg-white border transition flex flex-col min-h-[520px] shadow-sm ${
+                      isOver 
+                        ? 'border-indigo-600 bg-indigo-50/30 ring-2 ring-indigo-200' 
+                        : 'border-slate-200'
+                    }`}
+                  >
+                    {/* Header */}
+                    <div className="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                      <span className="font-bold text-slate-900 text-xs sm:text-sm">{stageLabels[stageKey]}</span>
+                      <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center">
+                        {stageCandidates.length}
+                      </span>
+                    </div>
+
+                    {/* Drop Target Helper when dragging */}
+                    {isOver && (
+                      <div className="m-3 p-3 border-2 border-dashed border-indigo-400 bg-indigo-50/60 rounded-lg text-center text-xs font-bold text-indigo-700 animate-pulse">
+                        Déposer ici pour passer en {stageLabels[stageKey]}
                       </div>
-                    ) : (
-                      stageCandidates.map(cand => {
-                        const score = calculateScore(cand.evaluation);
+                    )}
 
-                        return (
-                          <div 
-                            key={cand.id}
-                            className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-indigo-600 shadow-xs transition space-y-2"
-                          >
-                            <div className="flex items-start justify-between">
-                              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-white text-slate-700 border border-slate-200">
-                                {roleTitles[cand.role]}
-                              </span>
-                              <span className="font-mono text-xs font-bold text-slate-900 px-1.5 py-0.5 rounded bg-white border border-slate-200">
-                                {score}/100
-                              </span>
-                            </div>
+                    {/* Cards List */}
+                    <div className="p-3 flex-1 overflow-y-auto space-y-3">
+                      {stageCandidates.length === 0 && !isOver ? (
+                        <div className="py-12 text-center text-xs text-slate-400 font-medium border border-dashed border-slate-200 rounded-lg">
+                          Aucun candidat
+                        </div>
+                      ) : (
+                        stageCandidates.map(cand => {
+                          const score = calculateScore(cand.evaluation);
+                          const isComparing = selectedForCompare.includes(cand.id);
 
-                            <div>
-                              <h4 className="font-bold text-slate-900 text-sm">{cand.name}</h4>
-                              <p className="text-xs text-slate-500">{cand.experience_years} ans d'expérience</p>
-                            </div>
-
-                            <div className="flex flex-wrap gap-1">
-                              {cand.tags.slice(0, 3).map((tag, idx) => (
-                                <span key={idx} className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-white text-slate-600 border border-slate-200">
-                                  {tag}
+                          return (
+                            <div 
+                              key={cand.id}
+                              draggable={true}
+                              onDragStart={(e) => handleDragStart(e, cand.id)}
+                              className={`p-3.5 rounded-lg bg-slate-50 border cursor-grab active:cursor-grabbing shadow-xs transition space-y-2 hover:border-indigo-600 hover:shadow-md ${
+                                isComparing ? 'ring-2 ring-indigo-500 bg-indigo-50/20' : 'border-slate-200'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <GripVertical className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-white text-slate-700 border border-slate-200">
+                                    {roleTitles[cand.role]}
+                                  </span>
+                                </div>
+                                <span className="font-mono text-xs font-bold text-slate-900 px-1.5 py-0.5 rounded bg-white border border-slate-200">
+                                  {score}/100
                                 </span>
-                              ))}
-                            </div>
+                              </div>
 
-                            <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
-                              <button
-                                onClick={() => setSelectedCandidate(cand)}
-                                className="text-xs font-bold text-indigo-700 hover:text-indigo-800 flex items-center gap-1"
-                              >
-                                Dossier <ChevronRight className="w-3.5 h-3.5" />
-                              </button>
+                              <div>
+                                <h4 className="font-bold text-slate-900 text-sm">{cand.name}</h4>
+                                <p className="text-xs text-slate-500">{cand.experience_years} ans d'expérience</p>
+                              </div>
 
-                              <div className="flex items-center gap-1">
-                                {stageKey !== 'APPLIED' && (
+                              <div className="flex flex-wrap gap-1">
+                                {cand.tags.slice(0, 3).map((tag, idx) => (
+                                  <span key={idx} className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-white text-slate-600 border border-slate-200">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+
+                              <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-2">
                                   <button
-                                    title="Reculer"
-                                    onClick={() => {
-                                      const prevStageMap: Record<Stage, Stage> = {
-                                        APPLIED: 'APPLIED',
-                                        SCREENING: 'APPLIED',
-                                        TECH_TEST: 'SCREENING',
-                                        INTERVIEW: 'TECH_TEST',
-                                        HIRED: 'INTERVIEW',
-                                        REJECTED: 'APPLIED'
-                                      };
-                                      handleUpdateStage(cand.id, prevStageMap[stageKey]);
-                                    }}
-                                    className="p-1 rounded bg-white hover:bg-slate-100 text-slate-500 border border-slate-200"
+                                    onClick={() => setSelectedCandidate(cand)}
+                                    className="font-bold text-indigo-700 hover:text-indigo-800 flex items-center gap-0.5"
                                   >
-                                    <RotateCcw className="w-3 h-3" />
+                                    Dossier <ChevronRight className="w-3 h-3" />
                                   </button>
-                                )}
 
-                                {stageKey !== 'HIRED' && (
                                   <button
-                                    onClick={() => {
-                                      const nextStageMap: Record<Stage, Stage> = {
-                                        APPLIED: 'SCREENING',
-                                        SCREENING: 'TECH_TEST',
-                                        TECH_TEST: 'INTERVIEW',
-                                        INTERVIEW: 'HIRED',
-                                        HIRED: 'HIRED',
-                                        REJECTED: 'APPLIED'
-                                      };
-                                      handleUpdateStage(cand.id, nextStageMap[stageKey]);
-                                    }}
-                                    className="px-2 py-1 rounded bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs flex items-center gap-1 transition"
+                                    onClick={() => toggleSelectForCompare(cand.id)}
+                                    title="Sélectionner pour comparer"
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition ${
+                                      isComparing ? 'bg-indigo-700 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                    }`}
                                   >
-                                    <span>Avancer</span>
+                                    {isComparing ? '✓ Comparé' : '+ Comparer'}
                                   </button>
-                                )}
+
+                                  <button
+                                    onClick={() => setSelectedCandidateForCopilot(cand)}
+                                    title="Générer questions d'entretien IA personnalisées"
+                                    className="p-1 rounded text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition"
+                                  >
+                                    <Sparkles className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+
+                                <div className="flex items-center gap-1">
+                                  {stageKey !== 'HIRED' && (
+                                    <button
+                                      onClick={() => {
+                                        const nextStageMap: Record<Stage, Stage> = {
+                                          APPLIED: 'SCREENING',
+                                          SCREENING: 'TECH_TEST',
+                                          TECH_TEST: 'INTERVIEW',
+                                          INTERVIEW: 'HIRED',
+                                          HIRED: 'HIRED',
+                                          REJECTED: 'APPLIED'
+                                        };
+                                        handleUpdateStage(cand.id, nextStageMap[stageKey]);
+                                      }}
+                                      className="px-2 py-0.5 rounded bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs"
+                                    >
+                                      Avancer
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })
-                    )}
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
 
@@ -641,11 +883,10 @@ export default function App() {
               </div>
 
               <div className="space-y-4 pt-1">
-                {/* 1. Back */}
                 <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
                     <div>
-                      <span className="font-bold text-slate-900">Back-end & Architecture APIs</span>
+                      <span className="font-bold text-slate-900">Architecture & Ingénierie Système</span>
                       <span className="ml-2 font-semibold text-slate-500">(Coeff: 35%)</span>
                     </div>
                     <span className="font-bold text-slate-900 font-mono text-sm">{evalBack} / 100</span>
@@ -658,14 +899,13 @@ export default function App() {
                     onChange={(e) => setEvalBack(Number(e.target.value))}
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-700"
                   />
-                  <p className="text-[11px] text-slate-500">Laravel 11, Clean Architecture, Eloquent ORM, Transactions ACID</p>
+                  <p className="text-[11px] text-slate-500">Conception microservices, Clean Architecture, structuration des données et résilience</p>
                 </div>
 
-                {/* 2. Front */}
                 <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
                     <div>
-                      <span className="font-bold text-slate-900">Front-end & Composants</span>
+                      <span className="font-bold text-slate-900">Conception Logicielle & Implémentation</span>
                       <span className="ml-2 font-semibold text-slate-500">(Coeff: 30%)</span>
                     </div>
                     <span className="font-bold text-slate-900 font-mono text-sm">{evalFront} / 100</span>
@@ -678,14 +918,13 @@ export default function App() {
                     onChange={(e) => setEvalFront(Number(e.target.value))}
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-700"
                   />
-                  <p className="text-[11px] text-slate-500">React 18, TypeScript strict, ergonomie, gestion d'état</p>
+                  <p className="text-[11px] text-slate-500">Qualité du code, patrons de conception, interfaces réactives et modularité</p>
                 </div>
 
-                {/* 3. QA */}
                 <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
                     <div>
-                      <span className="font-bold text-slate-900">QA, Tests & Qualité de Code</span>
+                      <span className="font-bold text-slate-900">Fiabilité, Tests, CI/CD & Sécurité</span>
                       <span className="ml-2 font-semibold text-slate-500">(Coeff: 20%)</span>
                     </div>
                     <span className="font-bold text-slate-900 font-mono text-sm">{evalQa} / 100</span>
@@ -698,14 +937,13 @@ export default function App() {
                     onChange={(e) => setEvalQa(Number(e.target.value))}
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-700"
                   />
-                  <p className="text-[11px] text-slate-500">Tests E2E Playwright, PHPUnit/Pest, Postman, CI/CD Docker</p>
+                  <p className="text-[11px] text-slate-500">Tests automatisés, pipelines de déploiement continu, durcissement et audit OWASP</p>
                 </div>
 
-                {/* 4. Culture */}
                 <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
                     <div>
-                      <span className="font-bold text-slate-900">Culture Fit & Communication</span>
+                      <span className="font-bold text-slate-900">Leadership, Stratégie & Communication</span>
                       <span className="ml-2 font-semibold text-slate-500">(Coeff: 15%)</span>
                     </div>
                     <span className="font-bold text-slate-900 font-mono text-sm">{evalCulture} / 100</span>
@@ -718,7 +956,7 @@ export default function App() {
                     onChange={(e) => setEvalCulture(Number(e.target.value))}
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-700"
                   />
-                  <p className="text-[11px] text-slate-500">Esprit d'équipe, clarté pédagogique et rigueur</p>
+                  <p className="text-[11px] text-slate-500">Capacité à fédérer une équipe, rigueur de restitution et vision produit</p>
                 </div>
               </div>
 
@@ -766,13 +1004,13 @@ export default function App() {
               <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2 text-xs text-slate-600">
                 <h4 className="font-bold text-slate-900 uppercase tracking-wider text-xs flex items-center gap-1.5">
                   <Code2 className="w-4 h-4 text-indigo-700" />
-                  Formule de Notation
+                  Formule de Notation Universelle
                 </h4>
                 <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-mono text-slate-800">
-                  Note = (0.35 × Back) + (0.30 × Front) + (0.20 × QA) + (0.15 × Culture)
+                  Note = (0.35 × Archi) + (0.30 × Code) + (0.20 × QA/Sec) + (0.15 × Culture)
                 </div>
                 <p className="leading-relaxed">
-                  Cette pondération assure la stricte équité de sélection entre les candidats en priorisant la rigueur backend et la fluidité frontend.
+                  Cette pondération assure la stricte équité de sélection entre les candidats pour tous les postes d'ingénierie et de produit.
                 </p>
               </div>
             </div>
@@ -780,7 +1018,88 @@ export default function App() {
         )}
 
         {/* ============================================================== */}
-        {/* TAB 3: VIVIER DES CANDIDATS */}
+        {/* TAB 3: ENTRETIENS & PLANNING (NOUVELLE FONCTIONNALITÉ) */}
+        {/* ============================================================== */}
+        {activeTab === 'interviews' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-indigo-700" />
+                    Planning des Entretiens Techniques & Culture
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-500">
+                    Gestion des sessions de Live Coding, System Design et debriefings avec la direction
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowScheduleModal(true)}
+                  className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Programmer une Session</span>
+                </button>
+              </div>
+
+              {/* Interviews Table */}
+              <div className="overflow-x-auto pt-2">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+                    <tr>
+                      <th className="py-3 px-4">Date & Heure</th>
+                      <th className="py-3 px-4">Candidat & Rôle</th>
+                      <th className="py-3 px-4">Type de Session</th>
+                      <th className="py-3 px-4">Évaluateur Assigné</th>
+                      <th className="py-3 px-4">Lien Visio</th>
+                      <th className="py-3 px-4 text-center">Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {interviews.map(int => (
+                      <tr key={int.id} className="hover:bg-slate-50 transition">
+                        <td className="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">
+                          {int.date_time}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-slate-900">{int.candidate_name}</div>
+                          <div className="text-xs text-slate-500">{roleTitles[int.role]}</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+                            {interviewTypeLabels[int.type]}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-xs font-medium text-slate-700">
+                          {int.interviewer}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <a
+                            href={int.meet_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 hover:text-indigo-800"
+                          >
+                            <Video className="w-3.5 h-3.5" />
+                            <span>Rejoindre Meet</span>
+                          </a>
+                        </td>
+                        <td className="py-3.5 px-4 text-center">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            Confirmé
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB 4: VIVIER DES CANDIDATS */}
         {/* ============================================================== */}
         {activeTab === 'directory' && (
           <div className="space-y-6">
@@ -791,6 +1110,7 @@ export default function App() {
                 <table className="w-full text-left text-sm">
                   <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                     <tr>
+                      <th className="py-3 px-4 text-center">Comparer</th>
                       <th className="py-3 px-4">Candidat</th>
                       <th className="py-3 px-4">Poste</th>
                       <th className="py-3 px-4 text-center">Score Global</th>
@@ -802,6 +1122,14 @@ export default function App() {
                   <tbody className="divide-y divide-slate-100">
                     {filteredCandidates.map(cand => (
                       <tr key={cand.id} className="hover:bg-slate-50 transition">
+                        <td className="py-3.5 px-4 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedForCompare.includes(cand.id)}
+                            onChange={() => toggleSelectForCompare(cand.id)}
+                            className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                          />
+                        </td>
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-900">{cand.name}</div>
                           <div className="text-xs text-slate-500">{cand.email}</div>
@@ -842,7 +1170,7 @@ export default function App() {
         )}
 
         {/* ============================================================== */}
-        {/* TAB 4: MÉTRIQUES RH */}
+        {/* TAB 5: MÉTRIQUES RH */}
         {/* ============================================================== */}
         {activeTab === 'analytics' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -859,13 +1187,204 @@ export default function App() {
             </div>
 
             <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-sm">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Compétences Phares</h3>
-              <p className="text-base font-bold text-slate-900 mt-3">Laravel 11, React 18, TypeScript, Docker</p>
-              <p className="text-xs text-slate-500 mt-0.5">Alignement 100% équipe tech</p>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Postes Clés Ouverts</h3>
+              <p className="text-base font-bold text-slate-900 mt-3">Tech Lead, DevOps, Data, PM, DevSecOps, Mobile</p>
+              <p className="text-xs text-slate-500 mt-0.5">Écosystème technologique complet</p>
             </div>
           </div>
         )}
       </main>
+
+      {/* Modal: Comparateur de Candidats Côte à Côte */}
+      {showCompareModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-xl p-6 max-h-[90vh] overflow-y-auto space-y-5 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-indigo-700" />
+                  Comparateur de Candidats Côte à Côte
+                </h3>
+                <p className="text-xs text-slate-500">Évaluation comparative sur critères pondérés</p>
+              </div>
+              <button onClick={() => setShowCompareModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedForCompare.map(id => {
+                const c = candidates.find(item => item.id === id);
+                if (!c) return null;
+                const score = calculateScore(c.evaluation);
+
+                return (
+                  <div key={c.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+                    <div className="border-b border-slate-200 pb-2">
+                      <h4 className="font-bold text-slate-900 text-base">{c.name}</h4>
+                      <p className="text-xs text-indigo-700 font-semibold">{roleTitles[c.role]}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{c.experience_years} ans d'expérience</p>
+                    </div>
+
+                    <div className="text-center py-2 bg-white rounded-md border border-slate-200">
+                      <span className="text-xs text-slate-500 block">Score Global</span>
+                      <span className="text-3xl font-black text-slate-900 font-mono">{score} / 100</span>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex justify-between py-1 border-b border-slate-200/60">
+                        <span className="text-slate-500">Architecture</span>
+                        <span className="font-bold text-slate-800">{c.evaluation.backend}/100</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-slate-200/60">
+                        <span className="text-slate-500">Code & Implémentation</span>
+                        <span className="font-bold text-slate-800">{c.evaluation.frontend}/100</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-slate-200/60">
+                        <span className="text-slate-500">QA & Sécurité</span>
+                        <span className="font-bold text-slate-800">{c.evaluation.qa_architecture}/100</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-slate-200/60">
+                        <span className="text-slate-500">Culture Fit</span>
+                        <span className="font-bold text-slate-800">{c.evaluation.culture_fit}/100</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-slate-200/60">
+                        <span className="text-slate-500">Prétention</span>
+                        <span className="font-extrabold text-slate-900">{c.salary_expectation_xof.toLocaleString()} XOF</span>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span className="text-slate-500">Disponibilité</span>
+                        <span className="font-semibold text-slate-800">{c.availability}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Stack Maîtrisée</span>
+                      <div className="flex flex-wrap gap-1">
+                        {c.tags.map((t, idx) => (
+                          <span key={idx} className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-white text-slate-600 border border-slate-200">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setShowCompareModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition"
+              >
+                Fermer Comparateur
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Planifier un Entretien */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900">Planifier une Session d'Entretien</h3>
+              <button onClick={() => setShowScheduleModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Candidat
+                </label>
+                <select
+                  value={schedCandidateId}
+                  onChange={(e) => setSchedCandidateId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700 font-medium"
+                >
+                  {candidates.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({roleTitles[c.role]})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Type d'Entretien
+                </label>
+                <select
+                  value={schedType}
+                  onChange={(e) => setSchedType(e.target.value as any)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700 font-medium"
+                >
+                  <option value="SYSTEM_DESIGN">Architecture & System Design</option>
+                  <option value="LIVE_CODING">Test Live Coding</option>
+                  <option value="SCREENING">Screening RH Initial</option>
+                  <option value="CULTURE_FIT">Entretien Culture & Leadership</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    value={schedDate}
+                    onChange={(e) => setSchedDate(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Heure
+                  </label>
+                  <input
+                    type="time"
+                    value={schedTime}
+                    onChange={(e) => setSchedTime(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700 font-medium"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Évaluateur Assigné
+                </label>
+                <input
+                  type="text"
+                  value={schedInterviewer}
+                  onChange={(e) => setSchedInterviewer(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700 font-medium"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2 flex items-center justify-end gap-2">
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleScheduleInterview}
+                className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-semibold rounded-lg text-xs transition"
+              >
+                Confirmer Entretien
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal: Fiche Candidat 360 */}
       {selectedCandidate && (
@@ -905,15 +1424,15 @@ export default function App() {
               </div>
               <div className="grid grid-cols-4 gap-1.5 text-center text-xs pt-1">
                 <div className="p-1.5 rounded bg-white border border-slate-100">
-                  <span className="text-slate-400 block text-[10px]">Back</span>
+                  <span className="text-slate-400 block text-[10px]">Archi</span>
                   <span className="font-bold text-slate-900">{selectedCandidate.evaluation.backend}</span>
                 </div>
                 <div className="p-1.5 rounded bg-white border border-slate-100">
-                  <span className="text-slate-400 block text-[10px]">Front</span>
+                  <span className="text-slate-400 block text-[10px]">Code</span>
                   <span className="font-bold text-slate-900">{selectedCandidate.evaluation.frontend}</span>
                 </div>
                 <div className="p-1.5 rounded bg-white border border-slate-100">
-                  <span className="text-slate-400 block text-[10px]">QA</span>
+                  <span className="text-slate-400 block text-[10px]">QA/Sec</span>
                   <span className="font-bold text-slate-900">{selectedCandidate.evaluation.qa_architecture}</span>
                 </div>
                 <div className="p-1.5 rounded bg-white border border-slate-100">
@@ -951,7 +1470,17 @@ export default function App() {
               )}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  setCandidateForOffer(selectedCandidate);
+                }}
+                className="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-lg text-xs border border-emerald-300 transition flex items-center gap-1.5"
+              >
+                <FileCheck className="w-3.5 h-3.5" />
+                <span>Générer Offre d'Embauche</span>
+              </button>
+
               <button
                 onClick={() => setSelectedCandidate(null)}
                 className="px-4 py-1.5 bg-indigo-700 hover:bg-indigo-800 text-white font-semibold rounded-md text-xs transition"
@@ -965,37 +1494,50 @@ export default function App() {
 
       {/* Modal: New Candidate */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">Nouveau Candidat</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+          <div className="w-full max-w-lg bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 space-y-5 shadow-2xl animate-scaleUp">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 font-display">Nouveau Profil Candidat</h3>
+                  <p className="text-xs text-slate-500">Ajout manuel dans le pipeline ATS</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAddModal(false)} 
+                className="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition cursor-pointer"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Nom et Prénom
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Nom et Prénom</span>
                 </label>
                 <input
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Ex: Jean Houndé"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                  className="input-shadcn font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Poste Candidaté
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Poste Candidaté</span>
                 </label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as JobRole)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                  className="select-shadcn"
                 >
                   <option value="TECH_LEAD_ARCHITECT">Tech Lead & Architecte Logiciel</option>
                   <option value="DEVOPS_SRE">Ingénieur DevOps & Cloud SRE</option>
@@ -1006,72 +1548,119 @@ export default function App() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Email
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Email</span>
                   </label>
                   <input
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                    placeholder="candidat@email.bj"
+                    className="input-shadcn"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Téléphone
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Téléphone</span>
                   </label>
                   <input
                     type="text"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                    placeholder="+229 97 00 00 00"
+                    className="input-shadcn"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Compétences Clés
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <Code2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Compétences Clés (séparées par virgules)</span>
                 </label>
                 <input
                   type="text"
                   value={newTags}
                   onChange={(e) => setNewTags(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                  placeholder="Laravel, React, Microservices, Docker"
+                  className="input-shadcn"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Prétention Salariale (XOF)
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Prétention Salariale (XOF / mois)</span>
                 </label>
                 <input
                   type="number"
                   value={newSalary}
                   onChange={(e) => setNewSalary(Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                  className="input-shadcn font-bold"
                 />
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-end gap-2">
+            <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition"
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer"
               >
                 Annuler
               </button>
               <button
                 onClick={handleAddCandidate}
-                className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-semibold rounded-lg text-xs transition"
+                className="btn-indigo-gradient text-xs px-5 py-2.5"
               >
-                Ajouter
+                Ajouter au Pipeline
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal: AI Interview Copilot */}
+      {selectedCandidateForCopilot && (
+        <AiInterviewCopilotModal 
+          candidate={selectedCandidateForCopilot}
+          onClose={() => setSelectedCandidateForCopilot(null)}
+        />
+      )}
+
+      {/* Modal: Offer Letter & Compensation Generator */}
+      {candidateForOffer && (
+        <OfferLetterModal
+          candidate={candidateForOffer}
+          roleTitle={roleTitles[candidateForOffer.role]}
+          onClose={() => setCandidateForOffer(null)}
+          onAcceptOffer={(id) => {
+            handleUpdateStage(id, 'HIRED');
+            setToastMessage(`Offre acceptée ! ${candidateForOffer.name} est officiellement RECRUTÉ(E) !`);
+            setTimeout(() => setToastMessage(null), 4000);
+          }}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-indigo-500/40 animate-slideUp">
+          <Sparkles className="w-5 h-5 text-indigo-400" />
+          <span className="text-sm font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Modal: Data Backup Hub (Excel / JSON / Factory Reset) */}
+      {showDataHub && (
+        <DataBackupHubModal
+          candidates={candidates}
+          initialCandidates={INITIAL_CANDIDATES}
+          onUpdateCandidates={setCandidates}
+          onClose={() => setShowDataHub(false)}
+        />
       )}
     </div>
   );
